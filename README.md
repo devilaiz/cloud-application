@@ -55,3 +55,4 @@
    python -m uvicorn app.main:app --reload
    ```
 6. Перейдите в браузере по адресу: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+<!-- Лабораторная работа 11: проверка Pull Request -->
