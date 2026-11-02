@@ -4,6 +4,7 @@ from app.routers.system import router as system_router
 from app.routers.services import router as services_router  # если роутер сервисов уже подключён
 from app.routers.objects import router as objects_router
 from app.routers.auth import router as auth_router
+from app.routers.access import router as access_router
 
 app = FastAPI(
     title=settings.app_name,
@@ -16,3 +17,4 @@ app.include_router(system_router)
 app.include_router(services_router)
 app.include_router(objects_router)
 app.include_router(auth_router)
+app.include_router(access_router)

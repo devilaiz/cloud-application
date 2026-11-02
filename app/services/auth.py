@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.data.models import AuthSession, User
 from app.schemas.auth import LoginRequest, UserRegister
+from app.data.models import AuthSession, Role, User
 
 def get_user_by_username(db: Session, username: str):
     statement = select(User).where(User.username == username)
@@ -44,3 +45,19 @@ def logout_user(db: Session, token: str):
     db.delete(session)
     db.commit()
     return True
+def register_user(db: Session, user_data: UserRegister):
+    existing_user = get_user_by_username(db, user_data.username)
+    if existing_user is not None:
+        return None
+    
+    default_role = db.scalar(select(Role).where(Role.name == "viewer"))
+    
+    user = User(
+        username=user_data.username,
+        password=user_data.password,
+        role_id=default_role.id if default_role else None
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
