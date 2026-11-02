@@ -11,7 +11,13 @@ class Settings(BaseSettings):
     app_host: str = "127.0.0.1"
     app_port: int = 8000
     debug: bool = True
-    database_url: str  # <--- Добавили поле
+    database_url: str
+
+    # Параметры HTTPS (ЛР № 23)
+    https_enabled: bool = False
+    https_port: int = 8443
+    ssl_certfile: str | None = None
+    ssl_keyfile: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -19,6 +25,5 @@ class Settings(BaseSettings):
         case_sensitive=False,
         extra="ignore"
     )
-    storage_path: str = "storage/objects"
 
 settings = Settings()
