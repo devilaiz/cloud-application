@@ -12,6 +12,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.data.database import Base
 
+
 class ServiceType(Base):
     __tablename__ = "service_types"
     __table_args__ = (
@@ -23,6 +24,7 @@ class ServiceType(Base):
     description: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     services: Mapped[list["Service"]] = relationship(back_populates="service_type")
+
 
 class Service(Base):
     __tablename__ = "services"
@@ -42,7 +44,7 @@ class Service(Base):
 
     service_type: Mapped["ServiceType"] = relationship(back_populates="services")
 
-# === НОВАЯ МОДЕЛЬ ДЛЯ ЛР № 18 ===
+
 class StoredObject(Base):
     __tablename__ = "stored_objects"
     __table_args__ = (
@@ -60,3 +62,42 @@ class StoredObject(Base):
         server_default=func.now(),
         nullable=False
     )
+
+
+class User(Base):
+    __tablename__ = "users"
+    __table_args__ = (
+        UniqueConstraint("username", name="uq_users_username"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(50), nullable=False)
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
+    sessions: Mapped[list["AuthSession"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+
+class AuthSession(Base):
+    __tablename__ = "auth_sessions"
+    __table_args__ = (
+        UniqueConstraint("token", name="uq_auth_sessions_token"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    token: Mapped[str] = mapped_column(String(64), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
+    user: Mapped["User"] = relationship(back_populates="sessions")
