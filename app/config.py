@@ -19,5 +19,6 @@ class Settings(BaseSettings):
         case_sensitive=False,
         extra="ignore"
     )
+    storage_path: str = "storage/objects"
 
 settings = Settings()
