@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.data.database import get_db
+from app.data.models import User
+from app.security import get_current_user
 from app.schemas.auth import (
     LoginRequest,
     LoginResponse,
@@ -48,3 +50,10 @@ def logout(token: str, db: Session = Depends(get_db)):
     if not result:
         raise HTTPException(status_code=401, detail="Invalid session")
     return {"message": "Session closed"}
+@router.get("/me", summary="Получить текущего пользователя")
+def read_current_user(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "username": current_user.username,
+        "role": current_user.role.name if current_user.role else None
+    }
